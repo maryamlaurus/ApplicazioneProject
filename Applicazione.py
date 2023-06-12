@@ -61,6 +61,27 @@ def success(name):
 
 @app.route('/categoria',methods = ['POST', 'GET'])
 def categoria():
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="Arcobaleno1",
+        database="mydatabase"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM zalando")
+    myresult = mycursor.fetchall()
+
+    lista_indumenti=[]
+
+    # Aggiungi gli oggetti indumento alla lista_indumenti
+    for x in myresult:
+        p = indumento(x[0], x[1], x[2])
+        lista_indumenti.append(p)
+        lista.append(p)
+
+    # Aggiungi gli oggetti indumento a lista
+    lista.extend(lista_indumenti)
+
     categories = {}
     for articolo in lista:
         tipologia = articolo.tipologia
@@ -83,9 +104,12 @@ def categoria():
     labels_istogramma = list(categories.keys())
     values_istogramma = list(categories.values())
 
+    # Converte i dati di x in stringhe
+    x = np.arange(len(labels_istogramma)).astype(str)
+
     # Genera l'istogramma
     plt.subplot(212)
-    plt.bar(labels_istogramma, values_istogramma)
+    plt.bar(x, values_istogramma)
     plt.xlabel('Nome')
     plt.ylabel('Conteggio')
     plt.title('Istogramma')
@@ -95,6 +119,7 @@ def categoria():
     y = np.array(values_istogramma)
     slope, intercept = np.polyfit(x, y, 1)
     regression_line = slope * x + intercept
+
 
     # Aggiungi la previsione lineare al grafico a torta e all'istogramma
     plt.subplot(211)
